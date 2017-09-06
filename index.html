@@ -1,0 +1,100 @@
+<html>
+<head>
+	<title>Facebook Event App</title>
+</head>
+<body>
+	<div class="events-container"></div>
+
+	<script src="jQuery.js"></script>
+
+	<script>
+
+		var $events_container = $('.events-container');
+
+		// Retreives current date in yyyy-mm-dd form
+		var getDate = function(){
+		    var today = new Date();
+	        var dd = today.getDate();
+	        var mm = today.getMonth() + 1;
+	        var yyyy = today.getFullYear();
+
+	        if (dd < 10){
+	        	dd = '0' + dd;
+	        }
+	        if (mm < 10){
+	        	mm = '0' + mm;
+	        }
+	        var date = yyyy + '-' + mm + '-' + dd;
+	        return date;
+		}
+
+		console.log(getDate());
+
+		// Compares a date to today's date and checks if that date is after now
+		// Takes two arguments: 'today' - today's date; and 'other' - the date being checked
+		var isUpcoming = function(today, other){
+			//console.log(today + ' | ' + other);
+			if (parseInt(today.substring(0,4)) < parseInt(other.substring(0,4))){
+				return true;
+			} else if (parseInt(today.substring(0,4)) > parseInt(other.substring(0,4))){
+				return false;
+			}
+
+			if (parseInt(today.substring(5,7)) < parseInt(other.substring(5,7))){
+				return true;
+			} else if (parseInt(today.substring(5,7)) > parseInt(other.substring(5,7))){
+				return false;
+			}
+
+			if (parseInt(today.substring(8,10)) <= parseInt(other.substring(8,10))){
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		//console.log(isUpcoming(getDate(), '2017-10-05'));
+
+		var ajaxRequest = function(resource, callback){
+		  $.ajax({
+		      type: 'POST',
+		      headers: {
+		          "cache-control": "no-cache"
+		      },
+		      url: resource,
+		      async: false,
+		      cache: false,
+		      success: function(jsonString){
+		        callback(jsonString);
+		      }
+		  });
+		}
+
+		var populateEvents = function(jsonString){
+		    if (jsonString){        
+		        var eventData = JSON.parse(jsonString);
+		        console.log(eventData)
+		        eventData.events.forEach(function(event){
+		        	if (isUpcoming(getDate(), event.start_time.date) === true){
+			        	$events_container.append('<h3>' + event.name + '</h3>');
+			        	if (event.place){
+			        		$events_container.append('<p><span class="location">' + event.place.name + '</span>');
+			        	}
+			        	if (event.start_time){
+				        	$events_container.append('<span> ' + event.start_time.date + '</span></p>');
+				        }
+				    } else {
+				    	console.log('ain\'t upcoming')
+				    }
+		        })		        
+		    } else {
+		        window.alert("error!");
+		    }
+		}
+
+		ajaxRequest('getdata.php', populateEvents);
+
+	</script>
+
+</body>
+</html>
