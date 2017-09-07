@@ -11,6 +11,12 @@
 
 		var $events_container = $('.events-container');
 
+		var months = [' ','January','February','March','April','May','June','July','August','September','October','November','December'];
+		var refineDate = function(eventDate){
+		    var date = months[parseInt(eventDate.substring(5, 7))] + ' ' + eventDate.substring(8, 10) + ', ' + eventDate.substring(0,4);
+		    return date;
+		  }
+
 		// Retreives current date in yyyy-mm-dd form
 		var getDate = function(){
 		    var today = new Date();
@@ -81,7 +87,7 @@
 			        		$events_container.append('<p><span class="location">' + event.place.name + '</span>');
 			        	}
 			        	if (event.start_time){
-				        	$events_container.append('<span> ' + event.start_time.date + '</span></p>');
+				        	$events_container.append('<span> ' + refineDate(event.start_time.date) + '</span></p>');
 				        }
 				    } else {
 				    	console.log('ain\'t upcoming')
